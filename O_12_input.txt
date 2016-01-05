@@ -1,0 +1,23 @@
+2
+C:/Users/rahul/SkyDrive/Inria/build-Qt_meshRenderer-Desktop_Qt_5_4_0_MSVC2013_OpenGL_64bit-Release/release/O_1_tri.txt
+C:/Users/rahul/SkyDrive/Inria/build-Qt_meshRenderer-Desktop_Qt_5_4_0_MSVC2013_OpenGL_64bit-Release/release/O_1_vert1.txt
+C:/Users/rahul/SkyDrive/Inria/build-Qt_meshRenderer-Desktop_Qt_5_4_0_MSVC2013_OpenGL_64bit-Release/release/O_1_vert2.txt
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_1.png
+C:/Users/rahul/SkyDrive/Inria/build-Qt_meshRenderer-Desktop_Qt_5_4_0_MSVC2013_OpenGL_64bit-Release/release/O_2_tri.txt
+C:/Users/rahul/SkyDrive/Inria/build-Qt_meshRenderer-Desktop_Qt_5_4_0_MSVC2013_OpenGL_64bit-Release/release/O_2_vert1.txt
+C:/Users/rahul/SkyDrive/Inria/build-Qt_meshRenderer-Desktop_Qt_5_4_0_MSVC2013_OpenGL_64bit-Release/release/O_2_vert2.txt
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_2.png
+0 1 1 0
+1
+C:/Users/rahul/SkyDrive/Inria/build-Qt_meshRenderer-Desktop_Qt_5_4_0_MSVC2013_OpenGL_64bit-Release/release/O_12_pos.txt
+5
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_1_t1.png
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_1_t2.png
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_1_t3.png
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_1_t4.png
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_1_t5.png
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_2_t1.png
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_2_t2.png
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_2_t3.png
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_2_t4.png
+C:/Users/Rahul/Documents/MATLAB/sketchinterp/dataset/sketches/O_2_t5.png
