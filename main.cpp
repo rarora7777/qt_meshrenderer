@@ -253,6 +253,7 @@ static const char *fragmentShaderSource =
         "uniform float alpha;\n"
         "uniform int blend;\n"
         "uniform float affExponent;\n"
+        "uniform float histEqMult;\n"
         "void main(){\n"
             "// Output color = color of the texture at the specified UV\n"
             "float newAlpha;\n"
@@ -266,7 +267,7 @@ static const char *fragmentShaderSource =
                 "//color = vec4(0.0, pow( 0.5, pow(1.0f/aff, affExponent) ), 0.0, 1.0);\n"
                 "color = vec4(1-( newAlpha*(1-texture( srcTexture, UV).rgb) + (1-texture( fboTexture, UV_FBO).rgb) ), 1);\n"
             "else\n"
-                "color = vec4( texture( srcTexture, UV ).rgb, alpha );\n"
+                "color = vec4( 1-( histEqMult*(1-texture( srcTexture, UV ).rgb) ), alpha );\n"
                 "//color = vec4( newAlpha, newAlpha, newAlpha, 1.0 );\n"
         "}\n";
 //! [3]
@@ -296,6 +297,7 @@ void WarpWindow::initialize()
     m_showWireframeUniform = m_program->uniformLocation("showWireframe");
     m_affExponentUniform = m_program->uniformLocation("affExponent");
     m_affinityAttrib = m_program->attributeLocation("affinity");
+    m_histEqMultUniform = m_program->uniformLocation("histEqMult");
 
     showWireframe = false;
 
@@ -310,6 +312,14 @@ void WarpWindow::initialize()
             qDebug()<<t<<"not found. Quitting!";
             exit(0);
         }
+
+        uchar *data = texImg.bits();
+        float sum = 0;
+        int numChannel = texImg.depth()/8;
+        for(int i=0; i<texImg.width()*texImg.height(); ++i)
+            sum+=float(255.0f-data[numChannel*i])/255.0f;
+        pixelSum[iter] = sum/float(texImg.height()*texImg.width());
+        qDebug()<<pixelSum[iter];
         texImg = QGLWidget::convertToGLFormat(texImg);
         glGenTextures(1, &i_texture[iter]);
         glBindTexture(GL_TEXTURE_2D, i_texture[iter]);
@@ -561,6 +571,7 @@ void WarpWindow::render()
     glUniform1f(m_affExponentUniform, affExponent);
     glUniformMatrix4fv(m_matrixUniform, 1, GL_FALSE, mvp.constData());
     glUniform1i(m_blendUniform, 1);
+    glUniform1f(m_histEqMultUniform, 1.0);
 
     //Send barycentric coordinates to shader
     glEnableVertexAttribArray(2);
@@ -669,7 +680,7 @@ void WarpWindow::render()
                 );
 
             glUniform1f(m_alphaUniform, 1.0);
-            glUniform1i(m_blendUniform, 1);
+            glUniform1i(m_blendUniform, 0);
 
             glEnableVertexAttribArray(2);
             glBindBuffer(GL_ARRAY_BUFFER, baryBuffer);
@@ -779,6 +790,7 @@ void WarpWindow::render()
         else
             glUniform1f(m_alphaUniform, 1.0);
         glUniform1i(m_blendUniform, 1);
+        glUniform1f(m_histEqMultUniform, 1.0);
 
         // Draw the warped mesh!
         glDrawArrays(GL_TRIANGLES, 0, i_numTriangle[iter]*3);
@@ -846,6 +858,8 @@ void WarpWindow::render()
             (void*)0            // array buffer offset
             );
 
+        glUniform1f(m_histEqMultUniform, 1.0f);
+
     //     Draw the rectangle to copy color attachment 1 data to color attachment 0 which is used in the next iteration!
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -863,6 +877,8 @@ void WarpWindow::render()
 
 //    delete[] image;
 
+    //update histEqMult here so that the screenshot is also contrast equalized
+    computeHistEqMultiplier();
 
     if (screenshotTrigger)
     {
@@ -944,6 +960,7 @@ void WarpWindow::render()
     // Set curAlpha to zero for drawing the input image as always 100% opaque
     glUniform1f(m_alphaUniform, 1.0);
     glUniform1i(m_blendUniform, 0);
+    glUniform1f(m_histEqMultUniform, 1.0);
 
     // Draw the unwarped mesh!
     glDrawArrays(GL_TRIANGLES, 0, i_numTriangle[activeOrigImage]*3);
@@ -1003,6 +1020,9 @@ void WarpWindow::render()
         0,                  // stride
         (void*)0            // array buffer offset
         );
+
+    // TODO: Compute contrast equalization multiplier and send it to fragment shader
+    glUniform1f(m_histEqMultUniform, histEqMult);
 
 //     Draw the rectangle to copy framebuffer (m_FBO) data to screen (default framebuffer)!
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -1406,6 +1426,7 @@ void WarpWindow::saveCurrentRender(int x_beg, int y_beg, int imWidth, int imHeig
     QWidget *widget = new QWidget;
     QString imagePath = QFileDialog::getSaveFileName(widget, tr("Save File"),"",tr("PNG (*.png);;JPEG (*.jpg *.jpeg);;BMP (*.bmp)" ));
     imgQ.save(imagePath);
+    delete[] image;
 }
 //![9]
 
@@ -1421,4 +1442,23 @@ void WarpWindow::resetAnimation()
 {
     direction = 1;
     m_numAnimationMoves = 0;
+}
+
+void WarpWindow::computeHistEqMultiplier()
+{
+    float *image = new float[i_width*i_height*3];
+    float curSum = 0, allSum = 0;
+
+    glReadPixels(0, 0, i_width, i_height, GL_RGB, GL_FLOAT, image);
+
+    for (unsigned int i=0; i<i_width*i_height; ++i)
+        curSum+=(1.0f-image[3*i+1]);
+    curSum /= (i_width*i_height);
+
+    for (unsigned int iter=0; iter<i_numImage; ++iter)
+        allSum += blendAlpha[iter]*pixelSum[iter];
+
+    histEqMult = allSum/curSum;
+
+    delete[] image;
 }

@@ -79,12 +79,14 @@ private:
     void initializeMeshData();
     void warpMeshes();
     void saveCurrentRender(int, int, int, int);
+    void computeHistEqMultiplier();
 
     GLuint m_matrixUniform;     //location of MVP matrix in v-shader
     GLuint m_textureUniform;    //location of texture attribute in v-shader
     GLuint m_alphaUniform;      //location of alpha in f-shader
     GLuint m_baryAttrib;        //location of barycentric coordinate attribute in v-shader
     GLuint m_blendUniform;
+    GLuint m_histEqMultUniform;
     GLuint m_textureFBOUniform;
     GLuint m_affExponentUniform;
     GLuint m_affinityAttrib;
@@ -104,6 +106,8 @@ private:
     GLfloat warpAlphaEnd[10];
     GLfloat warpAlphaMove[10];
     GLfloat blendAlpha[10];     //alpha values for blending images (differs from warpAlpha by only a normalizing factor)
+    GLfloat pixelSum[10];
+
     GLboolean direction;        //animation direction: fwd or back
     GLboolean playAnimation;    //play/pause animation
     GLuint m_numAnimationMoves;
@@ -119,6 +123,7 @@ private:
     bool affinitiesGiven;   //if affinities have been provided, or should be assumed to be uniform throughout (default value is 1)
     float affExponent;
     QPointF **warpPositions;
+    float histEqMult;
 
     GLuint i_texture[10];           //stores all textures
     std::string i_textureFile[10];  //stores texture filenames (useful until textures have been loaded)
