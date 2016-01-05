@@ -1421,6 +1421,9 @@ void WarpWindow::saveCurrentRender(int x_beg, int y_beg, int imWidth, int imHeig
 {
     unsigned char *image = new unsigned char[i_width*i_height*4];
     glReadPixels(x_beg, y_beg, imWidth, imHeight, GL_RGB, GL_UNSIGNED_BYTE, image);
+    for (unsigned int i=0; i<imHeight*imWidth*3; ++i)
+        image[i] = 255-unsigned char((255-image[i])*histEqMult);
+
     QImage imgQ(image, imWidth, imHeight, QImage::Format_RGB888);
     imgQ = imgQ.mirrored();
     QWidget *widget = new QWidget;
@@ -1458,6 +1461,8 @@ void WarpWindow::computeHistEqMultiplier()
     for (unsigned int iter=0; iter<i_numImage; ++iter)
         allSum += blendAlpha[iter]*pixelSum[iter];
 
+    //contrast equalization: compute a multipler histEqMult = ( sum_{i in 1 to numImage}(alpha_i * pixelSum_i) )/pixelSum_{morphedImage}
+    //then multiple the morphed image with the multiplier
     histEqMult = allSum/curSum;
 
     delete[] image;
