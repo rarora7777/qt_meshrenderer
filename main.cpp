@@ -126,33 +126,43 @@ bool WarpWindow::event(QEvent *event)
 //                    break;
                 case Qt::Key_1:
                     blendImage[0] = !blendImage[0];
+                    showBlendAlphasTrigger = true;
                     break;
                 case Qt::Key_2:
                     blendImage[1] = !blendImage[1];
+                    showBlendAlphasTrigger = true;
                     break;
                 case Qt::Key_3:
                     blendImage[2] = !blendImage[2];
+                    showBlendAlphasTrigger = true;
                     break;
                 case Qt::Key_4:
                     blendImage[3] = !blendImage[3];
+                    showBlendAlphasTrigger = true;
                     break;
                 case Qt::Key_5:
                     blendImage[4] = !blendImage[4];
+                    showBlendAlphasTrigger = true;
                     break;
                 case Qt::Key_6:
                     blendImage[5] = !blendImage[5];
+                    showBlendAlphasTrigger = true;
                     break;
                 case Qt::Key_7:
                     blendImage[6] = !blendImage[6];
+                    showBlendAlphasTrigger = true;
                     break;
                 case Qt::Key_8:
                     blendImage[7] = !blendImage[7];
+                    showBlendAlphasTrigger = true;
                     break;
                 case Qt::Key_9:
                     blendImage[8] = !blendImage[8];
+                    showBlendAlphasTrigger = true;
                     break;
                 case Qt::Key_0:
                     blendImage[9] = !blendImage[9];
+                    showBlendAlphasTrigger = true;
                     break;
                 case Qt::Key_T:
                     thinningState = !thinningState;
@@ -385,7 +395,8 @@ void WarpWindow::initialize()
     screenshotTrigger = false;
     externalAlpha = true;
     m_maxAnimationSteps = 100;
-    affExponent = 10.0f;
+    affExponent = 3.0f;
+    showBlendAlphasTrigger = false;
 
     initializeMeshData();
 
@@ -552,7 +563,8 @@ void WarpWindow::render()
     if (sumAlpha>=EPSILON)
     {
         for (unsigned int iter=0; iter<i_numImage; ++iter)
-            blendAlpha[iter] /= sumAlpha;
+            if (blendImage[iter])
+                blendAlpha[iter] /= sumAlpha;
     }
     else if (numActiveImage>0)
     {
@@ -561,6 +573,11 @@ void WarpWindow::render()
                 blendAlpha[iter] = 1.0;
     }
 
+    if (showBlendAlphasTrigger)
+    {
+        showblendAlphas();
+        showBlendAlphasTrigger = false;
+    }
     //Use m_FBO as the current framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 
@@ -1459,7 +1476,8 @@ void WarpWindow::computeHistEqMultiplier()
     curSum /= (i_width*i_height);
 
     for (unsigned int iter=0; iter<i_numImage; ++iter)
-        allSum += blendAlpha[iter]*pixelSum[iter];
+        if (blendImage[iter])
+            allSum += blendAlpha[iter]*pixelSum[iter];
 
     //contrast equalization: compute a multipler histEqMult = ( sum_{i in 1 to numImage}(alpha_i * pixelSum_i) )/pixelSum_{morphedImage}
     //then multiple the morphed image with the multiplier

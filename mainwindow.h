@@ -80,6 +80,12 @@ private:
     void warpMeshes();
     void saveCurrentRender(int, int, int, int);
     void computeHistEqMultiplier();
+    void showblendAlphas()
+    {
+        QDebug deb = qDebug();
+        for (int i=0; i<i_numImage; ++i)
+            deb<<blendAlpha[i]<<"("<<blendImage[i]<<")";
+    }
 
     GLuint m_matrixUniform;     //location of MVP matrix in v-shader
     GLuint m_textureUniform;    //location of texture attribute in v-shader
@@ -118,6 +124,7 @@ private:
     GLboolean showWireframe;
     GLuint m_showWireframeUniform;
     GLboolean screenshotTrigger;
+    GLboolean showBlendAlphasTrigger;
     bool warpType;         //read warp type from file: 0 for shape interpolation only, 1 for viewpoint interpolation
                                 //this affects how the images are arranged in the final application
     bool affinitiesGiven;   //if affinities have been provided, or should be assumed to be uniform throughout (default value is 1)
