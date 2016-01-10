@@ -264,13 +264,27 @@ static const char *fragmentShaderSource =
         "uniform int blend;\n"
         "uniform float affExponent;\n"
         "uniform float histEqMult;\n"
+        "uniform int isMaxAlpha;"
         "void main(){\n"
             "// Output color = color of the texture at the specified UV\n"
             "float newAlpha;\n"
-            "if (aff>0.1f)\n"
-                "newAlpha = pow( alpha, pow(1.0f/aff, affExponent) );\n"
-            "else\n"
-                "newAlpha = pow( alpha, pow(10.0f, affExponent) );\n"
+            "float k, c, a;\n"
+            "a = 1.0f / pow(aff, affExponent);\n"
+            "if (isMaxAlpha==0)\n"
+            "{\n"
+                "k = 4.0f/3.0f*(1.0f+exp(2.0f*a/3.0f))/(-1.0f+exp(2.0f*a/3.0f));\n"
+                "c = -4.0f/3.0f*1.0f/(-1.0f+exp(2.0f*a/3.0f));\n"
+            "}\n"
+            "else"
+            "{\n"
+                "k = 2.0f/3.0f*(1.0f+exp(-a/3.0f))/(1.0f-exp(-a/3.0f));\n"
+                "c = 2.0f/3.0f + -k/2.0f;\n"
+            "}\n"
+            "newAlpha = max( 0.0f, min( 1.0f, k/(1.0f+exp(-a*(alpha-2.0f/3.0f))) + c ) );\n"
+            "//if (aff>0.1f)\n"
+                "//newAlpha = pow( alpha, pow(1.0f/aff, affExponent) );\n"
+            "//else\n"
+                "//newAlpha = pow( alpha, pow(10.0f, affExponent) );\n"
             "if (any(lessThan(vBC, vec3(0.05))))\n"
                 "color = vec4(alpha, 0.0, 0.0, 1.0);\n"
             "else if (blend==1)\n"
@@ -278,6 +292,7 @@ static const char *fragmentShaderSource =
                 "color = vec4(1-( newAlpha*(1-texture( srcTexture, UV).rgb) + (1-texture( fboTexture, UV_FBO).rgb) ), 1);\n"
             "else\n"
                 "color = vec4( 1-( histEqMult*(1-texture( srcTexture, UV ).rgb) ), alpha );\n"
+                "//color = vec4( texture( srcTexture, UV ).rgb, alpha );\n"
                 "//color = vec4( newAlpha, newAlpha, newAlpha, 1.0 );\n"
         "}\n";
 //! [3]
@@ -308,6 +323,7 @@ void WarpWindow::initialize()
     m_affExponentUniform = m_program->uniformLocation("affExponent");
     m_affinityAttrib = m_program->attributeLocation("affinity");
     m_histEqMultUniform = m_program->uniformLocation("histEqMult");
+    m_isMaxAlphaUniform = m_program->uniformLocation("isMaxAlpha");
 
     showWireframe = false;
 
@@ -395,7 +411,7 @@ void WarpWindow::initialize()
     screenshotTrigger = false;
     externalAlpha = true;
     m_maxAnimationSteps = 100;
-    affExponent = 3.0f;
+    affExponent = 5.0f;
     showBlendAlphasTrigger = false;
 
     initializeMeshData();
@@ -553,6 +569,8 @@ void WarpWindow::render()
 
     GLfloat sumAlpha = 0.0f;
     GLuint numActiveImage = 0;
+    GLfloat maxAlpha = 0.0f;
+    GLuint maxAlphaIdx = 0;
     for (unsigned int iter=0; iter<i_numImage; ++iter)
         if (blendImage[iter])
         {
@@ -573,6 +591,13 @@ void WarpWindow::render()
                 blendAlpha[iter] = 1.0;
     }
 
+    for(unsigned int iter = 0; iter<i_numImage; ++iter)
+        if (blendImage[iter] && blendAlpha[iter]>maxAlpha)
+        {
+            maxAlpha = blendAlpha[iter];
+            maxAlphaIdx = iter;
+        }
+
     if (showBlendAlphasTrigger)
     {
         showblendAlphas();
@@ -588,7 +613,8 @@ void WarpWindow::render()
     glUniform1f(m_affExponentUniform, affExponent);
     glUniformMatrix4fv(m_matrixUniform, 1, GL_FALSE, mvp.constData());
     glUniform1i(m_blendUniform, 1);
-    glUniform1f(m_histEqMultUniform, 1.0);
+    glUniform1f(m_histEqMultUniform, 1.0f);
+    glUniform1i(m_isMaxAlphaUniform, 0);
 
     //Send barycentric coordinates to shader
     glEnableVertexAttribArray(2);
@@ -808,6 +834,11 @@ void WarpWindow::render()
             glUniform1f(m_alphaUniform, 1.0);
         glUniform1i(m_blendUniform, 1);
         glUniform1f(m_histEqMultUniform, 1.0);
+
+        if(maxAlphaIdx == iter)
+            glUniform1i(m_isMaxAlphaUniform, 1);
+        else
+            glUniform1i(m_isMaxAlphaUniform, 0);
 
         // Draw the warped mesh!
         glDrawArrays(GL_TRIANGLES, 0, i_numTriangle[iter]*3);

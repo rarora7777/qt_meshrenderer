@@ -97,6 +97,7 @@ private:
     GLuint m_affExponentUniform;
     GLuint m_affinityAttrib;
     GLuint m_FBO;
+    GLuint m_isMaxAlphaUniform;
     GLuint texture_temp;
     GLuint m_textureFBO_0, m_textureFBO_1, m_textureFBO_2, m_textureFBO_3;
     GLfloat m_translate;        //degubbing variable: translate all objects on z-axis by m_translate
