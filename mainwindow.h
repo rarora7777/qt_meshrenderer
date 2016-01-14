@@ -51,6 +51,7 @@ private:
 //! [2]
 class WarpWindow : public OpenGLWindow
 {
+    Q_OBJECT
 public:
     WarpWindow(char *inputFile);
     ~WarpWindow();
@@ -72,6 +73,8 @@ public:
         return m_maxAnimationSteps;
     }
 
+public slots:
+    void setAffExponent(int);
 private:
     QOpenGLShader *loadShader(QOpenGLShader::ShaderType type, const char *source);
     bool event(QEvent *event) Q_DECL_OVERRIDE;

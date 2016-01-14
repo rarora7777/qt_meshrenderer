@@ -15,7 +15,7 @@
 
 ControlWindow::ControlWindow(WarpWindow *mainWindow, QGraphicsScene *sceneIn) : QGraphicsView(sceneIn), meshRenderer(mainWindow), scene(sceneIn)
 {
-    windowSize = sceneIn->sceneRect().height();
+    windowSize = sceneIn->sceneRect().width();
     anchorPen = new QPen(Qt::white);
     anchorBrush = new QBrush(Qt::lightGray);
     movePen = new QPen(Qt::darkBlue);
@@ -72,6 +72,63 @@ void ControlWindow::init(int i_numImage, bool warpTypeIn, QPointF **positions, s
 
     thumbHeight = 150;
     loadThumbs(imFiles);
+    addSlider();
+}
+
+void ControlWindow::addSlider()
+{
+    int sliderHeight = 20;
+    int labelWidth = windowSize/6;
+    int labelHeight = 50;
+    QPalette pal(palette());
+    pal.setColor(QPalette::Background, Qt::white);
+
+    alphaSlider = new QSlider(Qt::Horizontal);
+    alphaSliderProxy = scene->addWidget(alphaSlider);
+    alphaSlider->setGeometry(-windowSize/4, windowSize/2, windowSize/2, sliderHeight);
+    alphaSlider->setMinimum(0);
+    alphaSlider->setMaximum(49);
+    alphaSlider->setTracking(true);
+    alphaSlider->setTickPosition(QSlider::TicksBelow);
+    alphaSlider->setTickInterval(25);
+    connect(alphaSlider, SIGNAL(valueChanged(int)), meshRenderer, SLOT(setAffExponent(int)));
+
+    alphaSlider->setAutoFillBackground(true);
+    alphaSlider->setPalette(pal);
+
+    //create labels
+    QLabel *labelStart = new QLabel(QString("Draw All Contours"));
+    QLabel *labelMid = new QLabel(QString("Prefer Contours from Nearest Sketch"));
+    QLabel *labelEnd = new QLabel(QString("Draw Contours from Nearset Sketch Only"));
+
+    labelStart->setGeometry(-windowSize/4-labelWidth/2, windowSize/2 + sliderHeight + 5, labelWidth, labelHeight);
+    labelMid->setGeometry(-labelWidth/2, windowSize/2 + sliderHeight + 5, labelWidth, labelHeight);
+    labelEnd->setGeometry(windowSize/4-labelWidth/2, windowSize/2 + sliderHeight + 5, labelWidth, labelHeight);
+
+    labelStart->setWordWrap(true);
+    labelMid->setWordWrap(true);
+    labelEnd->setWordWrap(true);
+
+    labelStart->setAlignment(Qt::AlignCenter);
+    labelMid->setAlignment(Qt::AlignCenter);
+    labelEnd->setAlignment(Qt::AlignCenter);
+
+//    labelStart->setAutoFillBackground(true);
+//    labelStart->setPalette(pal);
+//    labelMid->setAutoFillBackground(true);
+//    labelMid->setPalette(pal);
+//    labelEnd->setAutoFillBackground(true);
+//    labelEnd->setPalette(pal);
+
+    labelMid->setStyleSheet(QString("background-color: rgba(255, 255, 255, 0)"));
+    labelStart->setStyleSheet(QString("background-color: rgba(255, 255, 255, 0)"));
+    labelEnd->setStyleSheet(QString("background-color: rgba(255, 255, 255, 0)"));
+
+    scene->addWidget(labelStart);
+    scene->addWidget(labelMid);
+    scene->addWidget(labelEnd);
+
+    alphaSlider->setValue(20);
 }
 
 void ControlWindow::setPosition(float *warpAlpha)
@@ -90,6 +147,11 @@ void ControlWindow::mouseMoveEvent(QMouseEvent *event)
     {
         float xPos = event->x() - windowSize/2;
         float yPos = event->y() - windowSize/2;
+        if (yPos>=windowSize/2)
+        {
+            alphaSlider->setValue(std::max(std::min(int(floor(50*(xPos+windowSize/4)/(windowSize/2))), 50), 0));
+            return;
+        }
         posBeginX = posBeginY = posEndX = posEndY = 10*windowSize;
         playAnimation = false;
         meshRenderer->resetAnimation();
@@ -102,6 +164,12 @@ void ControlWindow::mousePressEvent(QMouseEvent *event)
 //    qDebug()<<"Mouse pressed";
     float xPos = event->x() - windowSize/2;
     float yPos = event->y() - windowSize/2;
+
+    if (yPos>=windowSize/2)
+    {
+        alphaSlider->setValue(std::max(std::min(int(floor(50*(xPos+windowSize/4)/(windowSize/2))), 50), 0));
+        return;
+    }
 
 //    qDebug()<<xPos<<yPos;
 

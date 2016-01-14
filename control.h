@@ -7,6 +7,8 @@
 #include <QPen>
 #include <QBrush>
 #include "mainwindow.h"
+#include <QSlider>
+#include <QGraphicsProxyWidget>
 
 class Node;
 class Edge;
@@ -61,6 +63,8 @@ private:
     bool thumbsVisible;
     QGraphicsPixmapItem **thumbs;
     float thumbHeight;
+    QSlider *alphaSlider;
+    QGraphicsProxyWidget *alphaSliderProxy;
 
     bary *barycentric(float xPos, float yPos);
     enum axes {X, Y};
@@ -70,6 +74,7 @@ private:
     void triangleWrapper();
     void loadThumbs(std::string imFiles[]);
     void toggleThumbsVisibility();
+    void addSlider();
 };
 
 

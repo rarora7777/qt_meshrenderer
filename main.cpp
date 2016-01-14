@@ -1,4 +1,5 @@
 #define EPSILON 0.00005
+#define TWO_BY_THREE
 
 #include "mainwindow.h"
 #include "control.h"
@@ -203,7 +204,7 @@ int main(int argc, char **argv)
     mainWindow.setAnimating(true);
 
 
-    QGraphicsScene scene(-mainWindow.m_ctrlWindowSize/2, -mainWindow.m_ctrlWindowSize/2, mainWindow.m_ctrlWindowSize, mainWindow.m_ctrlWindowSize);
+    QGraphicsScene scene(-mainWindow.m_ctrlWindowSize/2, -mainWindow.m_ctrlWindowSize/2, mainWindow.m_ctrlWindowSize, mainWindow.m_ctrlWindowSize + 80);
     ctrlWindow = new ControlWindow(&mainWindow, &scene);
     ctrlWindow->setRenderHint(QPainter::Antialiasing);
     ctrlWindow->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
@@ -270,8 +271,9 @@ static const char *fragmentShaderSource =
             "float newAlpha;\n"
             "float k, c, a;\n"
             "a = 1.0f / pow(aff, affExponent);\n"
+#ifdef TWO_BY_THREE
             "//The two functions meet at (2/3, 2/3)\n"
-            "/*if (isMaxAlpha==0)\n"
+            "if (isMaxAlpha==0)\n"
             "{\n"
                 "k = 4.0f/3.0f*(1.0f+exp(2.0f*a/3.0f))/(-1.0f+exp(2.0f*a/3.0f));\n"
                 "c = -4.0f/3.0f*1.0f/(-1.0f+exp(2.0f*a/3.0f));\n"
@@ -281,7 +283,8 @@ static const char *fragmentShaderSource =
                 "k = 2.0f/3.0f*(1.0f+exp(-a/3.0f))/(1.0f-exp(-a/3.0f));\n"
                 "c = 2.0f/3.0f + -k/2.0f;\n"
             "}\n"
-            "newAlpha = max( 0.0f, min( 1.0f, k/(1.0f+exp(-a*(alpha-2.0f/3.0f))) + c ) );*/\n"
+            "newAlpha = max( 0.0f, min( 1.0f, k/(1.0f+exp(-a*(alpha-2.0f/3.0f))) + c ) );\n"
+#elif defined(ONE_BY_TWO)
             "//The two functions meet at (1/2, 1/2)\n"
             "if (isMaxAlpha==0)\n"
             "{\n"
@@ -294,6 +297,9 @@ static const char *fragmentShaderSource =
                 "c = (-2.0f+exp(-a/2.0f))/(-1.0f+exp(-a/2.0f));\n"
             "}\n"
             "newAlpha = max( 0.0f, min( 1.0f, k/(1.0f+exp(-a*(alpha-2.0f/3.0f))) + c ) );\n"
+#else
+            "newAlpha = alpha;"
+#endif
             "//if (aff>0.1f)\n"
                 "//newAlpha = pow( alpha, pow(1.0f/aff, affExponent) );\n"
             "//else\n"
@@ -424,7 +430,7 @@ void WarpWindow::initialize()
     screenshotTrigger = false;
     externalAlpha = true;
     m_maxAnimationSteps = 100;
-    affExponent = 5.0f;
+    affExponent = 3.5f;
     showBlendAlphasTrigger = false;
 
     initializeMeshData();
@@ -852,6 +858,8 @@ void WarpWindow::render()
             glUniform1i(m_isMaxAlphaUniform, 1);
         else
             glUniform1i(m_isMaxAlphaUniform, 0);
+
+        activeOrigImage = iter;
 
         // Draw the warped mesh!
         glDrawArrays(GL_TRIANGLES, 0, i_numTriangle[iter]*3);
@@ -1528,4 +1536,10 @@ void WarpWindow::computeHistEqMultiplier()
     histEqMult = allSum/curSum;
 
     delete[] image;
+}
+
+void WarpWindow::setAffExponent(int newExponent)
+{
+    affExponent = float(newExponent)/10.0f;
+    glUniform1f(m_affExponentUniform, affExponent);
 }
