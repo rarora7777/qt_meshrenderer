@@ -83,18 +83,18 @@ void ControlWindow::addSlider()
     QPalette pal(palette());
     pal.setColor(QPalette::Background, Qt::white);
 
-    alphaSlider = new QSlider(Qt::Horizontal);
-    alphaSliderProxy = scene->addWidget(alphaSlider);
-    alphaSlider->setGeometry(-windowSize/4, windowSize/2, windowSize/2, sliderHeight);
-    alphaSlider->setMinimum(0);
-    alphaSlider->setMaximum(49);
-    alphaSlider->setTracking(true);
-    alphaSlider->setTickPosition(QSlider::TicksBelow);
-    alphaSlider->setTickInterval(25);
-    connect(alphaSlider, SIGNAL(valueChanged(int)), meshRenderer, SLOT(setAffExponent(int)));
+    fuzzinessSlider = new QSlider(Qt::Horizontal);
+    alphaSliderProxy = scene->addWidget(fuzzinessSlider);
+    fuzzinessSlider->setGeometry(-windowSize/4, windowSize/2, windowSize/2, sliderHeight);
+    fuzzinessSlider->setMinimum(0);
+    fuzzinessSlider->setMaximum(49);
+    fuzzinessSlider->setTracking(true);
+    fuzzinessSlider->setTickPosition(QSlider::TicksBelow);
+    fuzzinessSlider->setTickInterval(25);
+    connect(fuzzinessSlider, SIGNAL(valueChanged(int)), meshRenderer, SLOT(setAffExponent(int)));
 
-    alphaSlider->setAutoFillBackground(true);
-    alphaSlider->setPalette(pal);
+    fuzzinessSlider->setAutoFillBackground(true);
+    fuzzinessSlider->setPalette(pal);
 
     //create labels
     QLabel *labelStart = new QLabel(QString("Draw All Contours"));
@@ -128,7 +128,7 @@ void ControlWindow::addSlider()
     scene->addWidget(labelMid);
     scene->addWidget(labelEnd);
 
-    alphaSlider->setValue(20);
+    fuzzinessSlider->setValue(20);
 }
 
 void ControlWindow::setPosition(float *warpAlpha)
@@ -149,7 +149,7 @@ void ControlWindow::mouseMoveEvent(QMouseEvent *event)
         float yPos = event->y() - windowSize/2;
         if (yPos>=windowSize/2)
         {
-            alphaSlider->setValue(std::max(std::min(int(floor(50*(xPos+windowSize/4)/(windowSize/2))), 50), 0));
+            fuzzinessSlider->setValue(std::max(std::min(int(floor(50*(xPos+windowSize/4)/(windowSize/2))), 50), 0));
             return;
         }
         posBeginX = posBeginY = posEndX = posEndY = 10*windowSize;
@@ -167,7 +167,7 @@ void ControlWindow::mousePressEvent(QMouseEvent *event)
 
     if (yPos>=windowSize/2)
     {
-        alphaSlider->setValue(std::max(std::min(int(floor(50*(xPos+windowSize/4)/(windowSize/2))), 50), 0));
+        fuzzinessSlider->setValue(std::max(std::min(int(floor(50*(xPos+windowSize/4)/(windowSize/2))), 50), 0));
         return;
     }
 
@@ -331,9 +331,6 @@ ControlWindow::~ControlWindow()
     delete[] thumbs;
 
     delete anchorBrush, anchorPen, moveBrush, movePen;
-
-    if (meshRenderer->isVisible())
-        meshRenderer->close();
 }
 
 void ControlWindow::setAlphaAnim(bool direction, int numAnimationSteps, int maxAnimationSteps)
@@ -583,5 +580,14 @@ void ControlWindow::keyPressEvent(QKeyEvent *event)
             meshRenderer->resetAnimation();
             setAlpha(polySize/2, 0.0);
             break;
+        case Qt::Key_Escape:
+            close();
     }
+}
+
+void ControlWindow::closeEvent(QCloseEvent *event)
+{
+    event->accept();
+    meshRenderer->hide();
+    qApp->quit();
 }
