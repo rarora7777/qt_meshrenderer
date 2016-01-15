@@ -1,6 +1,5 @@
 #include "newcontrol.h"
 #include "mainwindow.h"
-//#include <QSignalBlocker>
 
 NewControlWindow::NewControlWindow(WarpWindow *window) : meshRenderer(window)
 {
@@ -53,7 +52,6 @@ void NewControlWindow::createButton(int numImage)
     grid.addWidget(&blendModeButton[0], 0, numImage/2);
     grid.addWidget(&blendModeButton[1], 0, numImage/2+1);
     blendModeButton[0].setGeometry(0, 0, 200, radioHeight);
-    qDebug()<<width()<<height();
     blendModeButton[1].setGeometry(0, 0, 200, radioHeight);
 
     blendModeButton[0].setChecked(true);

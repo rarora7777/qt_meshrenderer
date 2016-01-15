@@ -5,8 +5,6 @@
 #include "mainwindow.h"
 #include <QSlider>
 #include <QMainWindow>
-#include <QVector>
-#include <QSignalMapper>
 
 class NewControlWindow : public QMainWindow
 {
@@ -33,6 +31,7 @@ private:
     QButtonGroup warpImageGroup;
     QPixmap **thumbs;
     QGridLayout grid;
+
     QSignalMapper signalMapper;
     float *residualDelta;
 
