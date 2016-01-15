@@ -3,6 +3,7 @@
 
 #include "mainwindow.h"
 #include "control.h"
+#include "newcontrol.h"
 
 #include <QApplication>
 #include <QtGui/QMatrix4x4>
@@ -30,6 +31,7 @@
 using namespace std;
 
 ControlWindow *ctrlWindow;
+NewControlWindow *sliderWindow;
 //! [1]
 
 
@@ -211,6 +213,11 @@ int main(int argc, char **argv)
     ctrlWindow->setBackgroundBrush(QColor(255, 255, 255));
     ctrlWindow->setWindowTitle("Control");
     ctrlWindow->show();
+
+    sliderWindow = new NewControlWindow(&mainWindow);
+    sliderWindow->setWindowTitle("Slider Control");
+    sliderWindow->show();
+    sliderWindow->setVisible(true);
 
     return app.exec();
 }
@@ -502,6 +509,8 @@ void WarpWindow::initialize()
     qDebug()<<"Image dimentions and window dimensions (Wi, Hi, Ww, Hw): "<<i_width<<i_height<<width()<<height();
 
     ctrlWindow->init(i_numImage, warpType, warpPositions, i_textureFile);
+    sliderWindow->initialize(i_numImage, i_textureFile);
+//    qDebug()<<"Slider visibility:"<<sliderWindow->isVisible();
 
 //    ctrlWindow->setPosition(warpAlpha);
 }
@@ -510,6 +519,7 @@ void WarpWindow::initialize()
 //! [5]
 void WarpWindow::render()
 {
+//    qDebug()<<sliderWindow->isVisible();
     const qreal retinaScale = devicePixelRatio();
 //    glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
@@ -859,7 +869,7 @@ void WarpWindow::render()
         else
             glUniform1i(m_isMaxAlphaUniform, 0);
 
-        activeOrigImage = iter;
+        //activeOrigImage = iter;
 
         // Draw the warped mesh!
         glDrawArrays(GL_TRIANGLES, 0, i_numTriangle[iter]*3);

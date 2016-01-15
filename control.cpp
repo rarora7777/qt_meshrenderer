@@ -331,9 +331,6 @@ ControlWindow::~ControlWindow()
     delete[] thumbs;
 
     delete anchorBrush, anchorPen, moveBrush, movePen;
-
-    if (meshRenderer->isVisible())
-        meshRenderer->close();
 }
 
 void ControlWindow::setAlphaAnim(bool direction, int numAnimationSteps, int maxAnimationSteps)
@@ -583,5 +580,14 @@ void ControlWindow::keyPressEvent(QKeyEvent *event)
             meshRenderer->resetAnimation();
             setAlpha(polySize/2, 0.0);
             break;
+        case Qt::Key_Escape:
+            close();
     }
+}
+
+void ControlWindow::closeEvent(QCloseEvent *event)
+{
+    event->accept();
+    meshRenderer->hide();
+    qApp->quit();
 }

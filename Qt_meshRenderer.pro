@@ -14,13 +14,15 @@ TEMPLATE = app
 
 
 SOURCES += edge.cpp node.cpp control.cpp mainwindow.cpp main.cpp \
-    triangle.c
+    triangle.c \
+    newcontrol.cpp
 
 HEADERS  += triangle.h \
     mainwindow.h \
     control.h \
     node.h \
-    edge.h
+    edge.h \
+    newcontrol.h
 
 #LIBS += triangle.obj
 

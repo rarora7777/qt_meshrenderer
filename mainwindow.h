@@ -75,6 +75,7 @@ public:
 
 public slots:
     void setAffExponent(int);
+
 private:
     QOpenGLShader *loadShader(QOpenGLShader::ShaderType type, const char *source);
     bool event(QEvent *event) Q_DECL_OVERRIDE;
@@ -86,7 +87,7 @@ private:
     void showblendAlphas()
     {
         QDebug deb = qDebug();
-        for (int i=0; i<i_numImage; ++i)
+        for (unsigned int i=0; i<i_numImage; ++i)
             deb<<blendAlpha[i]<<"("<<blendImage[i]<<")";
     }
 

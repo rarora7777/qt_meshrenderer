@@ -1,8 +1,6 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
-
-
 #include <QtWidgets>
 #include <QPen>
 #include <QBrush>
@@ -27,6 +25,7 @@ public:
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
+    void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
     void init(int i_numImage, bool warpTypeIn, QPointF **positions, std::string imFiles[10]);
     void setPosition(float *);
     bool getAnimationState();
