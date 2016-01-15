@@ -1,1 +1,6 @@
 *.pro.user*
+build*
+debug/*
+release/*
+Makefile*
+ui_*
