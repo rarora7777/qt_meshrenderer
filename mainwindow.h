@@ -75,6 +75,8 @@ public:
 
 public slots:
     void setAffExponent(int);
+    void setBlendMode(int);
+    void setWarpingImage(int);
 
 private:
     QOpenGLShader *loadShader(QOpenGLShader::ShaderType type, const char *source);

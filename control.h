@@ -62,7 +62,7 @@ private:
     bool thumbsVisible;
     QGraphicsPixmapItem **thumbs;
     float thumbHeight;
-    QSlider *alphaSlider;
+    QSlider *fuzzinessSlider;
     QGraphicsProxyWidget *alphaSliderProxy;
 
     bary *barycentric(float xPos, float yPos);

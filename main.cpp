@@ -1553,3 +1553,26 @@ void WarpWindow::setAffExponent(int newExponent)
     affExponent = float(newExponent)/10.0f;
     glUniform1f(m_affExponentUniform, affExponent);
 }
+
+void WarpWindow::setBlendMode(int mode)
+{
+    if (mode)
+    {
+        int activeImg = sliderWindow->getActiveSlider();
+        for (unsigned int iter=0; iter<i_numImage; ++iter)
+            blendImage[iter] = false;
+        blendImage[activeImg] = true;
+    }
+    else
+    {
+        for (unsigned int iter=0; iter<i_numImage; ++iter)
+            blendImage[iter] = true;
+    }
+}
+
+void WarpWindow::setWarpingImage(int id)
+{
+    for (unsigned int iter=0; iter<i_numImage; ++iter)
+        blendImage[iter] = false;
+    blendImage[id] = true;
+}

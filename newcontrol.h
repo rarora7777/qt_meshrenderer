@@ -15,6 +15,7 @@ public:
     void initialize(int numImage, std::string imFiles[]);
 
 public slots:
+    void toggleWarpImageButtons(int);
 //    void sliderMoved(int, int);
 
 signals:
@@ -31,11 +32,15 @@ private:
     QPixmap **thumbs;
     QGridLayout grid;
 
+    QSignalMapper signalMapper;
+    float *residualDelta;
+
     float sliderWidth;
     float thumbWidth;
     float thumbHeight;
     float sliderHeight;
     float radioHeight;
+    int i_numImage;
 
     WarpWindow *meshRenderer;
 
@@ -43,6 +48,11 @@ private:
     void createSliders(int numImage);
     void createThumbs(std::string *imFiles, int numImage);
     void NewControlWindow::createWarpImageSelectButtons(int numImage);
+
+public:
+    void getAlphaValues(float *);
+    void setAlphaValues(int, int);
+    int getActiveSlider();
 };
 
 #endif // NEWCONTROL_H
