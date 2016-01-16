@@ -49,8 +49,8 @@ void NewControlWindow::createButton(int numImage)
     blendModeButton[1].setParent(this);
     blendModeGroup.addButton(&blendModeButton[0], 0);
     blendModeGroup.addButton(&blendModeButton[1], 1);
-    grid.addWidget(&blendModeButton[0], 0, numImage/2);
-    grid.addWidget(&blendModeButton[1], 0, numImage/2+1);
+    grid.addWidget(&blendModeButton[0], 0, numImage/2-1);
+    grid.addWidget(&blendModeButton[1], 0, numImage/2);
     blendModeButton[0].setGeometry(0, 0, 200, radioHeight);
     blendModeButton[1].setGeometry(0, 0, 200, radioHeight);
 
