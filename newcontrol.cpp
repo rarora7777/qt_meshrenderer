@@ -63,7 +63,7 @@ void NewControlWindow::createButton(int numImage)
 void NewControlWindow::createSliders(int numImage)
 {
     alphaSlider = new QSlider *[numImage];
-    for(unsigned int i=0; i<numImage; ++i)
+    for(int i=0; i<numImage; ++i)
     {
         alphaSlider[i] = new QSlider;
         alphaSlider[i]->setMinimum(1);
@@ -86,7 +86,7 @@ void NewControlWindow::createWarpImageSelectButtons(int numImage)
 {
     warpImageButton = new QRadioButton *[numImage];
 
-    for (unsigned int i=0; i<numImage; ++i)
+    for (int i=0; i<numImage; ++i)
     {
         warpImageButton[i] = new QRadioButton(this);
         warpImageGroup.addButton(warpImageButton[i], i);
@@ -106,7 +106,7 @@ void NewControlWindow::createThumbs(std::string *imFiles, int numImage)
 {
     thumbs = new QPixmap *[numImage];
 
-    for (unsigned int i=0; i<numImage; ++i)
+    for (int i=0; i<numImage; ++i)
     {
         QPixmap temp;
 

@@ -111,7 +111,10 @@ bool WarpWindow::event(QEvent *event)
 //                    }
                     break;
                 case Qt::Key_Left:
-                    activeOrigImage = (activeOrigImage-1)%i_numImage;
+                    if (activeOrigImage==0)
+                        activeOrigImage = i_numImage-1;
+                    else
+                        activeOrigImage = (activeOrigImage-1)%i_numImage;
                     break;
                 case Qt::Key_Right:
                     activeOrigImage = (activeOrigImage+1)%i_numImage;
@@ -443,7 +446,7 @@ void WarpWindow::initialize()
     initializeMeshData();
 
     //initialize blending choices
-    for (unsigned int iter=0; iter<10; ++iter)
+    for (unsigned int iter=0; iter<15; ++iter)
     {
         if (iter<i_numImage)
             blendImage[iter] = true;
@@ -1130,7 +1133,7 @@ void WarpWindow::loadInputData(std::string inputFile)
 //    path.append("/");
     QString path = "";
     inputFile.insert(0, path.toStdString());
-    std::string vertFile[10][10], triFile[10], affFile[10][10];
+    std::string vertFile[15][15], triFile[15], affFile[15][15];
     std::string imagePositionFile;
     unsigned int numVertex, h, w;
     fstream curFile;
@@ -1500,7 +1503,7 @@ void WarpWindow::saveCurrentRender(int x_beg, int y_beg, int imWidth, int imHeig
 {
     unsigned char *image = new unsigned char[i_width*i_height*4];
     glReadPixels(x_beg, y_beg, imWidth, imHeight, GL_RGB, GL_UNSIGNED_BYTE, image);
-    for (unsigned int i=0; i<imHeight*imWidth*3; ++i)
+    for (int i=0; i<imHeight*imWidth*3; ++i)
         image[i] = 255-unsigned char((255-image[i])*histEqMult);
 
     QImage imgQ(image, imWidth, imHeight, QImage::Format_RGB888);

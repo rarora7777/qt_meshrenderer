@@ -114,12 +114,12 @@ private:
     QMatrix4x4 mvp;
     GLboolean externalAlpha;
     GLfloat curAlpha;           //debugging variable for alpha blending
-    GLfloat warpAlpha[10];      //alpha values for warping all images (actually decides warping as well as blending)
-    GLfloat warpAlphaBegin[10];
-    GLfloat warpAlphaEnd[10];
-    GLfloat warpAlphaMove[10];
-    GLfloat blendAlpha[10];     //alpha values for blending images (differs from warpAlpha by only a normalizing factor)
-    GLfloat pixelSum[10];
+    GLfloat warpAlpha[15];      //alpha values for warping all images (actually decides warping as well as blending)
+    GLfloat warpAlphaBegin[15];
+    GLfloat warpAlphaEnd[15];
+    GLfloat warpAlphaMove[15];
+    GLfloat blendAlpha[15];     //alpha values for blending images (differs from warpAlpha by only a normalizing factor)
+    GLfloat pixelSum[15];
 
     GLboolean direction;        //animation direction: fwd or back
     GLboolean playAnimation;    //play/pause animation
@@ -139,29 +139,29 @@ private:
     QPointF **warpPositions;
     float histEqMult;
 
-    GLuint i_texture[10];           //stores all textures
-    std::string i_textureFile[10];  //stores texture filenames (useful until textures have been loaded)
-    GLuint i_thinTexture[10][8];    //stores all thinned textures
-    std::string i_thinTextureFile[10][8];   //thinned texture filenames
+    GLuint i_texture[15];           //stores all textures
+    std::string i_textureFile[15];  //stores texture filenames (useful until textures have been loaded)
+    GLuint i_thinTexture[15][8];    //stores all thinned textures
+    std::string i_thinTextureFile[15][8];   //thinned texture filenames
     GLboolean thinning;
     GLboolean thinningState;
 
     GLuint i_numImage;          //number of images
-    GLuint i_numTriangle[10];   //number of triangles per mesh
+    GLuint i_numTriangle[15];   //number of triangles per mesh
     GLuint i_numTriangleMax;
     GLuint i_numThinningLevels; //number of thinning levels per sketch
     GLuint i_height;            //height of each image (all images must have the same dimenstions)
     GLuint i_width;
-    GLuint *i_tri[10];          //mesh data: triangulation (triplets representing triangles)
-    GLfloat *i_vert[10][10];    //mesh data: vertex locations
-    GLfloat *i_affinity[10][10];     //affnities of mesh vertices in each image towards all other images
+    GLuint *i_tri[15];          //mesh data: triangulation (triplets representing triangles)
+    GLfloat *i_vert[15][15];    //mesh data: vertex locations
+    GLfloat *i_affinity[15][15];     //affnities of mesh vertices in each image towards all other images
 
-    GLfloat *warpVertexBufferData[10];
-    GLfloat *origVertexBufferData[10];
-    GLfloat *uvBufferData[10];
+    GLfloat *warpVertexBufferData[15];
+    GLfloat *origVertexBufferData[15];
+    GLfloat *uvBufferData[15];
     GLfloat *barycentricCoors;
-    GLfloat *warpAffBufferData[10];
-    GLfloat *origAffBufferData[10];
+    GLfloat *warpAffBufferData[15];
+    GLfloat *origAffBufferData[15];
     GLfloat vertexDataFBO[12];
     GLfloat uvDataFBO[8];
     GLfloat barycentricCoorsFBO[12];
