@@ -43,7 +43,7 @@ WarpWindow::WarpWindow(char *inputFile)
 {
     loadInputData(inputFile);
     resize(2*i_width, i_height);
-    m_ctrlWindowSize = 700;
+    m_ctrlWindowSize = 500;
 }
 
 WarpWindow::~WarpWindow()
@@ -1504,7 +1504,7 @@ void WarpWindow::saveCurrentRender(int x_beg, int y_beg, int imWidth, int imHeig
     unsigned char *image = new unsigned char[i_width*i_height*4];
     glReadPixels(x_beg, y_beg, imWidth, imHeight, GL_RGB, GL_UNSIGNED_BYTE, image);
     for (int i=0; i<imHeight*imWidth*3; ++i)
-        image[i] = 255-unsigned char((255-image[i])*histEqMult);
+        image[i] = 255-unsigned char(std::min(255.0f, std::max(0.0f, (255-image[i])*histEqMult)));
 
     QImage imgQ(image, imWidth, imHeight, QImage::Format_RGB888);
     imgQ = imgQ.mirrored();

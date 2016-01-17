@@ -3,6 +3,10 @@
 
 NewControlWindow::NewControlWindow(WarpWindow *window) : meshRenderer(window)
 {
+    QPalette pal(palette());
+    pal.setColor(QPalette::Background, Qt::white);
+    this->setPalette(pal);
+
     sliderWidth = 30;
     sliderHeight = 150;
     thumbHeight = 100;
@@ -12,7 +16,9 @@ NewControlWindow::NewControlWindow(WarpWindow *window) : meshRenderer(window)
 
 NewControlWindow::~NewControlWindow()
 {
-
+    delete[] alphaSlider;
+    delete[] warpImageButton;
+    delete[] thumbs;
 }
 
 void NewControlWindow::initialize(int numImage, std::string imFiles[])
@@ -43,16 +49,21 @@ void NewControlWindow::initialize(int numImage, std::string imFiles[])
 
 void NewControlWindow::createButton(int numImage)
 {
+    QPalette pal(palette());
+    pal.setColor(QPalette::Background, Qt::white);
+
     blendModeButton[0].setText(QString("Blend Multiple Sketches"));
     blendModeButton[0].setParent(this);
     blendModeButton[1].setText(QString("Warp One Sketch"));
     blendModeButton[1].setParent(this);
     blendModeGroup.addButton(&blendModeButton[0], 0);
     blendModeGroup.addButton(&blendModeButton[1], 1);
-    grid.addWidget(&blendModeButton[0], 0, numImage/2-1);
-    grid.addWidget(&blendModeButton[1], 0, numImage/2);
-    blendModeButton[0].setGeometry(0, 0, 200, radioHeight);
-    blendModeButton[1].setGeometry(0, 0, 200, radioHeight);
+    blendModeButton[0].setGeometry(0, 0, 100, radioHeight);
+    blendModeButton[1].setGeometry(0, 0, 100, radioHeight);
+    blendModeButton[0].setPalette(pal);
+    blendModeButton[1].setPalette(pal);
+    grid.addWidget(&blendModeButton[0], 0, std::min(numImage/2-1, 1));
+    grid.addWidget(&blendModeButton[1], 0, std::min(numImage/2, 2));
 
     blendModeButton[0].setChecked(true);
 
@@ -62,6 +73,9 @@ void NewControlWindow::createButton(int numImage)
 
 void NewControlWindow::createSliders(int numImage)
 {
+    QPalette pal(palette());
+    pal.setColor(QPalette::Background, Qt::white);
+
     alphaSlider = new QSlider *[numImage];
     for(int i=0; i<numImage; ++i)
     {
@@ -73,6 +87,7 @@ void NewControlWindow::createSliders(int numImage)
         alphaSlider[i]->setMaximumHeight(sliderHeight);
         alphaSlider[i]->setTracking(true);
         alphaSlider[i]->setValue(100/numImage);
+        alphaSlider[i]->setPalette(pal);
         grid.addWidget(alphaSlider[i], 1 + 3*(i/5), i%5, Qt::AlignCenter);
         connect(alphaSlider[i], &QSlider::valueChanged, [this, i](int val)
             {
@@ -84,6 +99,9 @@ void NewControlWindow::createSliders(int numImage)
 
 void NewControlWindow::createWarpImageSelectButtons(int numImage)
 {
+    QPalette pal(palette());
+    pal.setColor(QPalette::Background, Qt::white);
+
     warpImageButton = new QRadioButton *[numImage];
 
     for (int i=0; i<numImage; ++i)
@@ -93,6 +111,7 @@ void NewControlWindow::createWarpImageSelectButtons(int numImage)
         grid.addWidget(warpImageButton[i], 1 + 3*(i/5) + 2, i%5, Qt::AlignCenter);
         warpImageButton[i]->setGeometry(0, 0, thumbWidth, radioHeight);
         warpImageButton[i]->setEnabled(false);
+        warpImageButton[i]->setPalette(pal);
         connect(warpImageButton[i], &QRadioButton::clicked, [this, i]()
             {
                 meshRenderer->setWarpingImage(i);
