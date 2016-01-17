@@ -172,7 +172,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
     {
         painter->setBrush(Qt::red);
         painter->setPen(QPen(Qt::black, 1));
-        painter->drawEllipse(-5, -5, 10, 10);
+        painter->drawEllipse(-10, -10, 20, 20);
     }
     else if(type==WARP_END_NODE)
     {
