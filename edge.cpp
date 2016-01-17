@@ -126,7 +126,10 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 
 //! [5]
     // Draw the line itself
-    painter->setPen(QPen(Qt::lightGray, 1, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin));
+    QPen pen(Qt::darkGray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    painter->setPen(pen);
+    pen.setCosmetic(false);
+    pen.setWidth(3);
     painter->drawLine(line);
 //! [5]
 
