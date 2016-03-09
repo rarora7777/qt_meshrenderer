@@ -43,7 +43,7 @@ WarpWindow::WarpWindow(char *inputFile)
 {
     loadInputData(inputFile);
     resize(2*i_width, i_height);
-    m_ctrlWindowSize = 500;
+    m_ctrlWindowSize = 700;
 }
 
 WarpWindow::~WarpWindow()
@@ -209,13 +209,14 @@ int main(int argc, char **argv)
     mainWindow.setAnimating(true);
 
 
-    QGraphicsScene scene(-mainWindow.m_ctrlWindowSize/2, -mainWindow.m_ctrlWindowSize/2, mainWindow.m_ctrlWindowSize, mainWindow.m_ctrlWindowSize + 80);
+    QGraphicsScene scene(-mainWindow.m_ctrlWindowSize/2, -mainWindow.m_ctrlWindowSize/2, mainWindow.m_ctrlWindowSize, mainWindow.m_ctrlWindowSize+80);
     ctrlWindow = new ControlWindow(&mainWindow, &scene);
     ctrlWindow->setRenderHint(QPainter::Antialiasing);
     ctrlWindow->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     ctrlWindow->setBackgroundBrush(QColor(255, 255, 255));
     ctrlWindow->setWindowTitle("Control");
     ctrlWindow->show();
+    ctrlWindow->move(0, 0);
 
     sliderWindow = new NewControlWindow(&mainWindow);
     sliderWindow->setWindowTitle("Slider Control");
@@ -296,17 +297,33 @@ static const char *fragmentShaderSource =
             "newAlpha = max( 0.0f, min( 1.0f, k/(1.0f+exp(-a*(alpha-2.0f/3.0f))) + c ) );\n"
 #elif defined(ONE_BY_TWO)
             "//The two functions meet at (1/2, 1/2)\n"
-            "if (isMaxAlpha==0)\n"
+            "if (alpha<=0.5)\n"
             "{\n"
-                "k = (1.0f+exp(a/2.0f))/(-1.0f+exp(a/2.0f));\n"
-                "c = -1.0f/(-1.0f+exp(a/2.0f));\n"
+                "k = (1.0f+exp(a/2.0f))/(1.0f-exp(a/2.0f));\n"
+                "c = (k-1.0f)/2.0f;\n"
             "}\n"
             "else"
             "{\n"
-                "k = (1.0f+exp(-a/2.0f))/(-1.0f+exp(-a/2.0f));\n"
-                "c = (-2.0f+exp(-a/2.0f))/(-1.0f+exp(-a/2.0f));\n"
+                "k = (1.0f+exp(-a/2.0f))/(1.0f-exp(-a/2.0f));\n"
+                "c = (k-1.0f)/2.0f;\n"
             "}\n"
-            "newAlpha = max( 0.0f, min( 1.0f, k/(1.0f+exp(-a*(alpha-2.0f/3.0f))) + c ) );\n"
+            "newAlpha = max( 0.0f, min( 1.0f, k/(1.0f+exp(-a*(alpha-1.0f/2.0f))) + c ) );\n"
+#elif defined(ONE_BY_THREE)
+            "//The two functions meet at (1/2, 1/2)\n"
+            "if (isMaxAlpha==0)\n"
+            "{\n"
+                "k = -2.0f/3.0f*(1.0f+exp(a/3.0f))/(1.0f-exp(a/3.0f));\n"
+                "c = 1.0f/3.0f - k/2.0f;\n"
+            "}\n"
+            "else"
+            "{\n"
+                "k = 4.0f/3.0f*(1.0f+exp(-2.0f*a/3.0f))/(1.0f-exp(-2.0f*a/3.0f));\n"
+                "c = 1.0f/3.0f - k/2.0f;\n"
+            "}\n"
+                "newAlpha = max( 0.0f, min( 1.0f, k/(1.0f+exp(-a*(alpha-1.0f/3.0f))) + c ) );\n"
+#elif defined(ONE)
+        "//Single function\n"
+            "newAlpha = 1.0f/( 1.0f+exp( -a*(alpha-0.5f) ) );\n"
 #else
             "newAlpha = alpha;"
 #endif

@@ -159,7 +159,8 @@ void NewControlWindow::setAlphaValues(int sliderIdx, int val)
         sumAll+=values[i];
     }
 
-    deltaSum = (100+i_numImage-1)-sumAll;
+//    deltaSum = (100+i_numImage-1)-sumAll;
+    deltaSum = 100-sumAll;
     sumInactive = sumAll - val;
 
     if (sumInactive)

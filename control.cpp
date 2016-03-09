@@ -70,7 +70,7 @@ void ControlWindow::init(int i_numImage, bool warpTypeIn, QPointF **positions, s
     meshRenderer->resetAnimation();
     setAlpha(0.0, 0.0);
 
-    thumbHeight = 150;
+    thumbHeight = 200;
     loadThumbs(imFiles);
     addSlider();
 }
@@ -359,6 +359,27 @@ void ControlWindow::setAlpha(float xPos, float yPos)
     //and posBegin*, posEnd*. Set main node to this position. Then, compute the implied warp
     //alpha values using barycentric coordinates, and return these as a float array.
 
+//    //THIS IS THE CODE THAT MIGHT NOT WORK
+//    float sumAlpha = 0;
+//    float *warpAlpha = new float[numImage];
+//    for (int i=0; i<numImage; ++i)
+//    {
+//        warpAlpha[i] = sqrt((xPos - circles[i]->x())*(xPos - circles[i]->x()) + (yPos - circles[i]->y())*(yPos - circles[i]->y()));
+//        sumAlpha += warpAlpha[i];
+//    }
+
+//    for (int i=0; i<numImage; ++i)
+//    {
+//        warpAlpha[i] = warpAlpha[i]/sumAlpha;
+//        qDebug()<<warpAlpha[i];
+//    }
+
+//    meshRenderer->setAlpha(warpAlpha);
+//    mainNode->setPos(xPos, yPos);
+
+//    delete[] warpAlpha;
+//    return;
+
     if (numImage>=3)
     {
         float *warpAlpha = new float[numImage];
@@ -384,6 +405,7 @@ void ControlWindow::setAlpha(float xPos, float yPos)
             return;
         }
 
+        //THIS IS THE CODE THAT WORKS
         for (int i=0; i<numImage; ++i)
             warpAlpha[i] = 0;
 
@@ -391,6 +413,7 @@ void ControlWindow::setAlpha(float xPos, float yPos)
         warpAlpha[triangles[b->triangleId][1]] = b->coordinates[1];
         warpAlpha[triangles[b->triangleId][2]] = b->coordinates[2];
         meshRenderer->setAlpha(warpAlpha);
+
         mainNode->setPos(b->coordinates[0]*circles[triangles[b->triangleId][0]]->x()
                 + b->coordinates[1]*circles[triangles[b->triangleId][1]]->x()
                 + b->coordinates[2]*circles[triangles[b->triangleId][2]]->x()
@@ -582,6 +605,10 @@ void ControlWindow::keyPressEvent(QKeyEvent *event)
             break;
         case Qt::Key_Escape:
             close();
+        case Qt::Key_P:
+            for (int i=0; i<numImage; ++i)
+                qDebug()<<circles[i]->x()<<circles[i]->y();
+            qDebug()<<mainNode->x()<<mainNode->y();
     }
 }
 
